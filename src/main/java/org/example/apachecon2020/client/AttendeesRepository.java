@@ -16,7 +16,16 @@
  */
 package org.example.apachecon2020.client;
 
+import java.util.List;
+
+import org.springframework.data.gemfire.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 public interface AttendeesRepository extends CrudRepository<Attendee, Long> {
+  List<Attendee> findAllByLastName(String lastName);
+
+  List<Attendee> findAllByFirstNameStartsWith(String letter);
+
+  @Query("SELECT * FROM /Attendees a WHERE a.id != $1")
+  List<Attendee> findAllByIdNotUsingQuery(Long id);
 }

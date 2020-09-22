@@ -19,10 +19,22 @@ public class ApacheConDemoApplication {
 	@Bean
 	ApplicationRunner runner(AttendeesRepository repository) {
 		return args -> {
-			Attendee john = new Attendee(1L, "Jack", "Black");
-			System.out.printf("Saving attendee %s with id 1L%n", john);
-			repository.save(john);
-			System.out.printf("Retrieved attendee %s for id 1L%n", repository.findById(1L).get());
+			Attendee jack = new Attendee(1L, "Jack", "Black");
+			Attendee emily = new Attendee(2L, "Emily", "Black");
+			Attendee janet = new Attendee(3L, "Janet", "Lee");
+
+			repository.save(jack);
+			repository.save(emily);
+			repository.save(janet);
+
+			System.out.println("Finding all attendees with last name \"Black\": ");
+			repository.findAllByLastName("Black").forEach(System.out::println);
+
+			System.out.println("Finding all attendees whose first name starts with \"J\": ");
+			repository.findAllByFirstNameStartsWith("J").forEach(System.out::println);
+
+			System.out.println("Finding all attendees whose id is NOT \"1\" using a query: ");
+			repository.findAllByIdNotUsingQuery(1L).forEach(System.out::println);
 		};
 	}
 }
