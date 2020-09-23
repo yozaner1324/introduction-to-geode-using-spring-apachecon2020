@@ -7,18 +7,12 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.gemfire.config.annotation.ClientCacheApplication;
 import org.springframework.data.gemfire.config.annotation.EnableClusterConfiguration;
-import org.springframework.data.gemfire.config.annotation.EnableContinuousQueries;
 import org.springframework.data.gemfire.config.annotation.EnableEntityDefinedRegions;
-import org.springframework.data.gemfire.listener.annotation.ContinuousQuery;
-
-import org.apache.geode.cache.query.CqEvent;
 
 @SpringBootApplication
 @EnableEntityDefinedRegions
-@EnableClusterConfiguration(useHttp = true, requireHttps = false)
-@ClientCacheApplication(subscriptionEnabled = true)
+@EnableClusterConfiguration
 public class ApacheConDemoApplication {
 
 	public static void main(String[] args) {
@@ -26,7 +20,8 @@ public class ApacheConDemoApplication {
 	}
 
 	@Bean
-	ApplicationRunner runner(AttendeesRepository repository) {
+	ApplicationRunner runner(AttendeesRepository repository,
+							 AttendeeFunctionExecutions functionExecutions) {
 		return args -> {
 			List<Attendee> attendees = new LinkedList<>();
 			attendees.add(new Attendee(1L, "Jack", "Black"));
@@ -36,16 +31,10 @@ public class ApacheConDemoApplication {
 			attendees.add(new Attendee(5L, "Amanda", "Howard"));
 			attendees.add(new Attendee(6L, "Greg", "Logan"));
 
-			for(Attendee attendee : attendees) {
-				System.out.printf("Saving %s%n", attendee);
-				repository.save(attendee);
-				Thread.sleep(2000);
-			}
-		};
-	}
+			repository.saveAll(attendees);
 
-	@ContinuousQuery(name = "AttendeeCQ", query = "SELECT * FROM /Attendees")
-	public void handleEvent(CqEvent event) {
-		System.out.printf("Found %s in Attendees region%n", event.getNewValue());
+			System.out.printf("Average length of first name: %f",
+					functionExecutions.calculateAverageFirstNameLength());
+		};
 	}
 }

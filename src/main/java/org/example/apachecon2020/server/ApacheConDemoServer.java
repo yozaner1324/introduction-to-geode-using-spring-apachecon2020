@@ -16,18 +16,30 @@
  */
 package org.example.apachecon2020.server;
 
+import java.util.Map;
+
+import org.example.apachecon2020.client.Attendee;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.data.gemfire.config.annotation.CacheServerApplication;
-import org.springframework.data.gemfire.config.annotation.EnableHttpService;
-import org.springframework.data.gemfire.config.annotation.EnableLocator;
-import org.springframework.data.gemfire.config.annotation.EnableManager;
+import org.springframework.data.gemfire.function.annotation.GemfireFunction;
+import org.springframework.data.gemfire.function.annotation.RegionData;
+import org.springframework.data.gemfire.function.config.EnableGemfireFunctions;
 
 @SpringBootApplication
 @CacheServerApplication
+@EnableGemfireFunctions
 public class ApacheConDemoServer {
   public static void main(String[] args) {
     SpringApplication.run(ApacheConDemoServer.class, args);
+  }
+
+  @GemfireFunction(id = "calculateAverageFirstNameLength", hasResult = true)
+  public Float calculateAverageFirstNameLength(@RegionData Map<Long, Attendee> regionData) {
+    float sum = 0;
+    for(Attendee attendee : regionData.values()) {
+      sum += attendee.getFirstName().length();
+    }
+    return sum / regionData.size();
   }
 }

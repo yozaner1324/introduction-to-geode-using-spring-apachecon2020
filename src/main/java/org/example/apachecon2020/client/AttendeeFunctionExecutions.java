@@ -16,26 +16,12 @@
  */
 package org.example.apachecon2020.client;
 
-import org.springframework.data.gemfire.mapping.annotation.Region;
+import org.springframework.data.gemfire.function.annotation.FunctionId;
+import org.springframework.data.gemfire.function.annotation.OnRegion;
 
-@Region("Attendees")
-public class Attendee {
-  private final Long id;
-  private final String firstName;
-  private final String lastName;
+@OnRegion(region = "Attendees")
+public interface AttendeeFunctionExecutions {
 
-  public  Attendee(Long id, String firstName, String lastName) {
-    this.id = id;
-    this.firstName = firstName;
-    this.lastName = lastName;
-  }
-
-  public String getFirstName() {
-    return firstName;
-  }
-
-  @Override
-  public String toString() {
-    return String.format("{id: %d name: %s %s}", id, firstName, lastName);
-  }
+    @FunctionId("calculateAverageFirstNameLength")
+    Float calculateAverageFirstNameLength();
 }
