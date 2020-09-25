@@ -20,7 +20,9 @@ import java.util.Map;
 
 import org.example.apachecon2020.client.Attendee;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.data.gemfire.config.annotation.CacheServerApplication;
 import org.springframework.data.gemfire.function.annotation.GemfireFunction;
 import org.springframework.data.gemfire.function.annotation.RegionData;
@@ -31,7 +33,7 @@ import org.springframework.data.gemfire.function.config.EnableGemfireFunctions;
 @EnableGemfireFunctions
 public class ApacheConDemoServer {
   public static void main(String[] args) {
-    SpringApplication.run(ApacheConDemoServer.class, args);
+    new SpringApplicationBuilder(ApacheConDemoServer.class).web(WebApplicationType.NONE).build().run(args);
   }
 
   @GemfireFunction(id = "calculateAverageFirstNameLength", hasResult = true)
